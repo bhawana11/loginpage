@@ -202,25 +202,25 @@ class _LoginPageState extends State<LoginPage> {
           'password': passwordController.text,
         },
       );
-      print(response.body);
+
       if (response.statusCode == 200) {
         try {
           final jsonResponse = jsonDecode(response.body);
-          final key = jsonResponse['key'];
-          if (key is String) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => HomeScreen(),
-              ),
-            );
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text("Invalid Response: ${response.body}")));
+          final jsonStr = jsonEncode(jsonResponse);
+          print(jsonStr);
+          if (jsonResponse.containsKey('msg')) {
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text(jsonResponse['msg'])));
           }
-        } catch (e) {
           ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Invalid Credentials: ${response.body}")));
+              SnackBar(content: Text("Invalid Response: ${response.body}")));
+        } catch (e) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomeScreen(),
+            ),
+          );
         }
       } else {
         ScaffoldMessenger.of(context)
